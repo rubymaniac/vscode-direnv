@@ -4,8 +4,12 @@
   "description": "Automatically detect and load .envrc when opening VS Code",
   "version": "0.0.1",
   "publisher": "Rubymaniac",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/rubymaniac/vscode-direnv/issues"
   },
   "repository": {
     "type": "git",
