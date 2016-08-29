@@ -52,7 +52,7 @@ In order to run a command press `cmd+shift+p` to view the Command Palette. There
 * `direnv view` to view your `.envrc` and make changes
 * `direnv version` to view the current `direnv` version
 
-### Contributing
+## Contribute
 
 For any bugs and feature requests please open an issue. For code contributions please create a pull request. Enjoy!  
 
