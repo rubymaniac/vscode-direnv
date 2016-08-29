@@ -1,58 +1,56 @@
 {
-  "name": "vscode-direnv",
-  "displayName": "direnv",
-  "description": "Automatically detect and load .envrc when opening VS Code",
-  "version": "0.0.1",
-  "publisher": "Rubymaniac",
-  "license": "MIT",
-  "engines": {
-    "vscode": "^1.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/rubymaniac/vscode-direnv/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rubymaniac/vscode-direnv.git"
-  },
-  "scripts": {
-    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "lint": "node ./node_modules/tslint/bin/tslint ./src/*.ts"
-  },
-  "devDependencies": {
-    "typescript": "^1.8.5",
-    "tslint": "^3.15.1",
-    "vscode": "^0.11.0"
-  },
-  "dependencies": {
-
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/src/main",
-  "contributes": {
-    "commands": [
-      {
-        "command": "direnv.version",
-        "title": "direnv: view version",
-        "description": "Shows the version of the direnv installed."
-      },
-      {
-        "command": "direnv.view",
-        "title": "direnv: view .envrc",
-        "description": "Opens up the .envrc file."
-      },
-      {
-        "command": "direnv.allow",
-        "title": "direnv: allow the .envrc",
-        "description": "Allows direnv to load the .envrc."
-      }
-    ]
-  }
+    "name": "vscode-direnv",
+    "displayName": "direnv",
+    "description": "Automatically detect and load .envrc when opening VS Code",
+    "version": "0.0.2",
+    "publisher": "Rubymaniac",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.0.0"
+    },
+    "bugs": {
+        "url": "https://github.com/rubymaniac/vscode-direnv/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rubymaniac/vscode-direnv.git"
+    },
+    "scripts": {
+        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "lint": "node ./node_modules/tslint/bin/tslint ./src/*.ts"
+    },
+    "devDependencies": {
+        "typescript": "^1.8.5",
+        "tslint": "^3.15.1",
+        "vscode": "^0.11.0"
+    },
+    "dependencies": {},
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/main",
+    "contributes": {
+        "commands": [
+            {
+                "command": "direnv.version",
+                "title": "direnv: view version",
+                "description": "Shows the version of the direnv installed."
+            },
+            {
+                "command": "direnv.view",
+                "title": "direnv: view .envrc",
+                "description": "Opens up the .envrc file."
+            },
+            {
+                "command": "direnv.allow",
+                "title": "direnv: allow the .envrc",
+                "description": "Allows direnv to load the .envrc."
+            }
+        ]
+    }
 }
