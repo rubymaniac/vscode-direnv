@@ -31,7 +31,7 @@ Via the Extensions tab:
 Via the command line:
 
 1. Open a command-line prompt
-2. Run `code --install-extension rubymaniac.vscode-direnv`
+2. Run `code --install-extension Rubymaniac.vscode-direnv`
 
 ## Usage
 
