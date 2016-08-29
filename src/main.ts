@@ -8,10 +8,10 @@ import { Command } from './command';
 let oldEnvDiff = {};
 let command = new Command(vscode.workspace.rootPath);
 let watcher = vscode.workspace.createFileSystemWatcher(command.rcPath, true);
-let displayError = (e) => 
+let displayError = (e) =>
     vscode.window.showErrorMessage(constants.messages.error(e));
 let handleError = (t: Thenable<any>) => t.then(undefined, displayError);
-let version = () => 
+let version = () =>
     command.version().then(v => vscode.window.showInformationMessage(constants.messages.version(v)), displayError);
 let revertFromOption = (option) => {
     if (option === constants.vscode.extension.actions.revert) {
@@ -34,7 +34,7 @@ let assignEnvDiff = (options: { showSuccess: boolean }) => {
         }
     }, (err) => {
         if (err.message.indexOf(`${constants.direnv.rc} is blocked`) !== -1) {
-            return vscode.window.showWarningMessage(constants.messages.assign.warn, 
+            return vscode.window.showWarningMessage(constants.messages.assign.warn,
                 constants.vscode.extension.actions.allow, constants.vscode.extension.actions.view);
         } else {
             return displayError(err);
@@ -63,11 +63,11 @@ let allowFromOption = (option) => {
 };
 let view = () =>
     handleError(vscode.commands.executeCommand(constants.vscode.commands.open, vscode.Uri.file(command.rcPath)));
-let viewThenAllow = () => view().then(() => 
-    vscode.window.showInformationMessage(constants.messages.assign.allow, 
+let viewThenAllow = () => view().then(() =>
+    vscode.window.showInformationMessage(constants.messages.assign.allow,
         constants.vscode.extension.actions.allow)).then(allowFromOption);
 
-watcher.onDidChange((e) => vscode.window.showWarningMessage(constants.messages.rc.changed, 
+watcher.onDidChange((e) => vscode.window.showWarningMessage(constants.messages.rc.changed,
     constants.vscode.extension.actions.allow).then(allowFromOption));
 watcher.onDidDelete((e) => vscode.window.showWarningMessage(constants.messages.rc.deleted,
     constants.vscode.extension.actions.revert).then(revertFromOption));

@@ -1,41 +1,54 @@
 {
-    "name": "vscode-direnv",
-    "displayName": "Direnv",
-    "description": "Automatically detect and load .envrc when opening VS Code",
-    "version": "0.0.1",
-    "publisher": "Rubymaniac",
-    "engines": {
-        "vscode": "^1.0.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./out/src/main",
-    "contributes": {
-        "commands": [{
-            "command": "direnv.version",
-            "title": "Direnv: Show version",
-            "description": "Shows the version of the direnv installed."
-        }, {
-            "command": "direnv.view",
-            "title": "Direnv: Show .envrc",
-            "description": "Opens up the .envrc file."
-        }, {
-            "command": "direnv.allow",
-            "title": "Direnv: Allow current .envrc",
-            "description": "Allows direnv to load the current .envrc."
-        }]
-    },
-    "scripts": {
-        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "typescript": "^1.8.5",
-        "vscode": "^0.11.0"
-    }
+  "name": "vscode-direnv",
+  "displayName": "Direnv",
+  "description": "Automatically detect and load .envrc when opening VS Code",
+  "version": "0.0.1",
+  "publisher": "Rubymaniac",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rubymaniac/vscode-direnv.git"
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "lint": "node ./node_modules/tslint/bin/tslint ./src/*.ts"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.5",
+    "tslint": "^3.15.1",
+    "vscode": "^0.11.0"
+  },
+  "dependencies": {
+
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/src/main",
+  "contributes": {
+    "commands": [
+      {
+        "command": "direnv.version",
+        "title": "Direnv: Show version",
+        "description": "Shows the version of the direnv installed."
+      },
+      {
+        "command": "direnv.view",
+        "title": "Direnv: Show .envrc",
+        "description": "Opens up the .envrc file."
+      },
+      {
+        "command": "direnv.allow",
+        "title": "Direnv: Allow current .envrc",
+        "description": "Allows direnv to load the current .envrc."
+      }
+    ]
+  }
 }
