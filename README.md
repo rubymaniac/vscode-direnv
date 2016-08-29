@@ -1,4 +1,4 @@
-# [Direnv](https://github.com/direnv/direnv) for Visual Studio Code
+# [direnv](https://github.com/direnv/direnv) for Visual Studio Code
 
 This extension adds support for direnv to VS Code, including:
 

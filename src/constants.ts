@@ -1,7 +1,7 @@
 'use strict';
 
 export const direnv = {
-    name: 'Direnv',
+    name: 'direnv',
     cmd: 'direnv',
     rc: '.envrc'
 };

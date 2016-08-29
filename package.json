@@ -1,6 +1,6 @@
 {
   "name": "vscode-direnv",
-  "displayName": "Direnv",
+  "displayName": "direnv",
   "description": "Automatically detect and load .envrc when opening VS Code",
   "version": "0.0.1",
   "publisher": "Rubymaniac",
@@ -40,18 +40,18 @@
     "commands": [
       {
         "command": "direnv.version",
-        "title": "Direnv: Show version",
+        "title": "direnv: view version",
         "description": "Shows the version of the direnv installed."
       },
       {
         "command": "direnv.view",
-        "title": "Direnv: Show .envrc",
+        "title": "direnv: view .envrc",
         "description": "Opens up the .envrc file."
       },
       {
         "command": "direnv.allow",
-        "title": "Direnv: Allow current .envrc",
-        "description": "Allows direnv to load the current .envrc."
+        "title": "direnv: allow the .envrc",
+        "description": "Allows direnv to load the .envrc."
       }
     ]
   }
