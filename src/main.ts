@@ -6,7 +6,17 @@ import * as constants from './constants';
 import { Command } from './command';
 
 let oldEnvDiff = {};
-let command = new Command(vscode.workspace.rootPath);
+let rpath = vscode.workspace['workspaceFolders'];
+if (rpath && rpath[0] && rpath[0]['uri']['path']) {
+    rpath = rpath[0]['uri']['path'];
+} else {
+    if (vscode.workspace['rootPath']) {
+        rpath = vscode.workspace['rootPath'];
+    } else {
+        rpath = process.env['HOME'];
+    }
+}
+let command = new Command(rpath);
 let watcher = vscode.workspace.createFileSystemWatcher(command.rcPath, true);
 let displayError = (e) =>
     vscode.window.showErrorMessage(constants.messages.error(e));
