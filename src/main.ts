@@ -12,7 +12,7 @@ let displayError = (e) =>
     vscode.window.showErrorMessage(constants.messages.error(e));
 let handleError = (t: Thenable<any>) => t.then(undefined, displayError);
 let version = () =>
-    command.version().then(v => vscode.window.showInformationMessage(constants.messages.version(v)), displayError);
+    vscode.window.showInformationMessage(constants.messages.version(command.version()));
 let revertFromOption = (option) => {
     if (option === constants.vscode.extension.actions.revert) {
         utils.assign(process.env, oldEnvDiff);
@@ -20,41 +20,45 @@ let revertFromOption = (option) => {
         vscode.window.showInformationMessage(constants.messages.reverted);
     }
 };
-let assignEnvDiff = (options: { showSuccess: boolean }) => {
-    return command.exportJSON().then((envDiff) => {
+let assignEnvDiff = async (options: { showSuccess: boolean }) => {
+    try {
+        let envDiff = command.exportJSON()
         Object.keys(envDiff).forEach((key) => {
             if (key.indexOf('DIRENV_') === -1 && oldEnvDiff[key] !== envDiff[key]) {
                 oldEnvDiff[key] = process.env[key];
             }
         });
-        return utils.assign(process.env, envDiff);
-    }).then(() => {
+        utils.assign(process.env, envDiff);
         if (options.showSuccess) {
             return vscode.window.showInformationMessage(constants.messages.assign.success);
         }
-    }, (err) => {
+    } catch (err) {
+        let optionP;
         if (err.message.indexOf(`${constants.direnv.rc} is blocked`) !== -1) {
-            return vscode.window.showWarningMessage(constants.messages.assign.warn,
+            optionP = vscode.window.showWarningMessage(constants.messages.assign.warn,
                 constants.vscode.extension.actions.allow, constants.vscode.extension.actions.view);
         } else {
-            return displayError(err);
+            optionP = displayError(err);
         }
-    }).then((option) => {
+        let option = await optionP
         if (option === constants.vscode.extension.actions.allow) {
             return allow();
         } else if (option === constants.vscode.extension.actions.view) {
             return viewThenAllow();
         }
-    });
+    }
 };
 let allow = () => {
-    return command.allow().then(() => assignEnvDiff({ showSuccess: true }), (err) => {
+    try {
+        command.allow();
+        return assignEnvDiff({ showSuccess: true });
+    } catch (err) {
         if (err.message.indexOf(`${constants.direnv.rc} file not found`) !== -1) {
             return vscode.commands.executeCommand(constants.vscode.commands.open, vscode.Uri.file(command.rcPath));
         } else {
-            displayError(err);
+            return displayError(err);
         }
-    });
+    };
 };
 let allowFromOption = (option) => {
     if (option === constants.vscode.extension.actions.allow) {
