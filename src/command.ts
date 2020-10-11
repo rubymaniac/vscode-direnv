@@ -1,7 +1,7 @@
 'use strict';
 
 import * as path from 'path';
-import { exec, ExecOptions } from 'child_process';
+import { exec, execSync, ExecOptionsWithStringEncoding } from 'child_process';
 import * as constants from './constants';
 import * as utils from './utils';
 
@@ -21,26 +21,42 @@ export class Command {
         this.rcPath = path.join(rootPath, `${constants.direnv.rc}`);
     }
     // Private methods
-    private exec(options: CommandExecOptions): Thenable<string> {
+    private execAsync(options: CommandExecOptions): Thenable<string> {
+        return <Thenable<string>>this.exec(false, options)
+    }
+
+    private execSync(options: CommandExecOptions): string {
+        return <string>this.exec(true, options)
+    }
+
+    private exec(sync: boolean, options: CommandExecOptions): Thenable<string> | string {
         let direnvCmd = [constants.direnv.cmd, options.cmd].join(' ');
-        let execOptions: ExecOptions = {};
+        let execOptions: ExecOptionsWithStringEncoding = { encoding: 'utf8' };
         if (options.cwd == null || options.cwd) {
             execOptions.cwd = this.rootPath;
         }
-        return new Promise((resolve, reject) => {
-            exec(direnvCmd, execOptions, (err, stdout, stderr) => {
-                if (err) {
-                    err.message = stderr;
-                    reject(err);
-                } else {
-                    resolve(stdout);
-                }
+        if (sync) {
+            console.log("NOTE: executing command synchronously", direnvCmd)
+            return execSync(direnvCmd, execOptions);
+        } else {
+            return new Promise((resolve, reject) => {
+                exec(direnvCmd, execOptions, (err, stdout, stderr) => {
+                    if (err) {
+                        err.message = stderr;
+                        reject(err);
+                    } else {
+                        resolve(stdout);
+                    }
+                });
             });
-        });
+        }
     }
     // Public methods
-    version = () => this.exec({ cmd: 'version' });
-    allow = () => this.exec({ cmd: 'allow' });
-    deny = () => this.exec({ cmd: 'deny' });
-    exportJSON = () => this.exec({ cmd: 'export json' }).then((o) => o ? JSON.parse(o) : {});
+    version = () => this.execAsync({ cmd: 'version' });
+    allow = () => this.execAsync({ cmd: 'allow' });
+    deny = () => this.execAsync({ cmd: 'deny' });
+    exportJSONSync = () => {
+        const o = this.execSync({ cmd: 'export json' })
+        return o ? JSON.parse(o) : {}
+    };
 }

@@ -5,7 +5,7 @@ import * as utils from './utils';
 import * as constants from './constants';
 import { Command } from './command';
 
-let oldEnvDiff = {};
+let restartExtensionHost= () => vscode.commands.executeCommand("workbench.action.restartExtensionHost")
 let command = new Command(vscode.workspace.rootPath);
 let watcher = vscode.workspace.createFileSystemWatcher(command.rcPath, true);
 let displayError = (e) =>
@@ -15,40 +15,55 @@ let version = () =>
     command.version().then(v => vscode.window.showInformationMessage(constants.messages.version(v)), displayError);
 let revertFromOption = (option) => {
     if (option === constants.vscode.extension.actions.revert) {
-        utils.assign(process.env, oldEnvDiff);
-        oldEnvDiff = {};
-        vscode.window.showInformationMessage(constants.messages.reverted);
+        restartExtensionHost()
     }
 };
-let assignEnvDiff = (options: { showSuccess: boolean }) => {
-    return command.exportJSON().then((envDiff) => {
-        Object.keys(envDiff).forEach((key) => {
-            if (key.indexOf('DIRENV_') === -1 && oldEnvDiff[key] !== envDiff[key]) {
-                oldEnvDiff[key] = process.env[key];
-            }
-        });
-        return utils.assign(process.env, envDiff);
-    }).then(() => {
+
+let initialize: () => Thenable<number> = () => {
+    try {
+        const envDiff = command.exportJSONSync()
+        console.log("loaded direnv diff:", envDiff)
+        return Promise.resolve(utils.assign(process.env, envDiff))
+    } catch(err) {
+        return Promise.reject<number>(err)
+    }
+}
+
+let postInitialize = (result: Thenable<number>, options: { showSuccess: boolean }) => {
+    return result.then(() => {
         if (options.showSuccess) {
             return vscode.window.showInformationMessage(constants.messages.assign.success);
         }
     }, (err) => {
         if (err.message.indexOf(`${constants.direnv.rc} is blocked`) !== -1) {
             return vscode.window.showWarningMessage(constants.messages.assign.warn,
-                constants.vscode.extension.actions.allow, constants.vscode.extension.actions.view);
+                constants.vscode.extension.actions.allow, constants.vscode.extension.actions.view
+            ).then((option) => {
+                if (option === constants.vscode.extension.actions.allow) {
+                    return allow();
+                } else if (option === constants.vscode.extension.actions.view) {
+                    return viewThenAllow();
+                }
+            });
         } else {
             return displayError(err);
         }
-    }).then((option) => {
-        if (option === constants.vscode.extension.actions.allow) {
-            return allow();
-        } else if (option === constants.vscode.extension.actions.view) {
-            return viewThenAllow();
+    })
+}
+
+let reinitialize = (options: { showSuccess: boolean }) => {
+    const result = initialize()
+    result.then((changes) => {
+        if (changes > 0) {
+            postInitialize(result, options).then(() => restartExtensionHost())
+        } else {
+            return postInitialize(result, options)
         }
-    });
+    })
 };
+
 let allow = () => {
-    return command.allow().then(() => assignEnvDiff({ showSuccess: true }), (err) => {
+    return command.allow().then(() => reinitialize({ showSuccess: true }), (err) => {
         if (err.message.indexOf(`${constants.direnv.rc} file not found`) !== -1) {
             return vscode.commands.executeCommand(constants.vscode.commands.open, vscode.Uri.file(command.rcPath));
         } else {
@@ -72,11 +87,15 @@ watcher.onDidChange((e) => vscode.window.showWarningMessage(constants.messages.r
 watcher.onDidDelete((e) => vscode.window.showWarningMessage(constants.messages.rc.deleted,
     constants.vscode.extension.actions.revert).then(revertFromOption));
 
+// NOTE: we apply synchronously on extension import to ensure it takes effect for all extensions.
+// This means plugin activation state isn't actually respected.
+let initializeResult = initialize()
+
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('direnv.version', version));
     context.subscriptions.push(vscode.commands.registerCommand('direnv.view', view));
     context.subscriptions.push(vscode.commands.registerCommand('direnv.allow', allow));
-    assignEnvDiff({ showSuccess: false });
+    postInitialize(initializeResult, { showSuccess: false })
 }
 
 export function deactivate() {
